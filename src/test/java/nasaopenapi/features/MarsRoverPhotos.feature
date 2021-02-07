@@ -12,3 +12,13 @@ Feature: User is query Mars Rover Photos
         And match response.photos == '#[25]'
         And match response.photos[0].rover.name == 'Curiosity'
         And match response.photos[0].sol == 1000
+    
+    @smoke @flaky
+    Scenario: FlakyTest
+        Given params { sol: 1000, page: 1, api_key: 'DEMO_KEY'}
+        Given path 'curiosity/photos'
+        When method get
+        Then status 200
+        And match response.photos == '#[25]'
+        And match response.photos[0].rover.name == 'Curiosity'
+        And match response.photos[0].sol == 1000
