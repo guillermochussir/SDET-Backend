@@ -1,7 +1,8 @@
 package nasaopenapi;
-
+import com.intuit.karate.KarateOptions;
 import com.intuit.karate.junit5.Karate;
 
+@KarateOptions( tags = {"@smoke"})
 class NasaOpenApiTest {
     
     // this will run all *.feature files that exist in sub-directories
@@ -10,5 +11,5 @@ class NasaOpenApiTest {
     Karate testAll() {
         return Karate.run().relativeTo(getClass());
     }
-    
+
 }
