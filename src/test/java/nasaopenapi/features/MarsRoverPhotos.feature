@@ -34,6 +34,40 @@ Feature: User is query Mars Rover Photos
     * karate.repeat(10, retrieveImageSource)
     * def imageURLs = karate.lowerCase(imageURLs)
     And match each imageURLs contains '.jpg'
+
+    @smoke
+    Scenario: Compare Photos
+    #retrieve the first 10 Mars photos made by "Curiosity" on 1000 Martian sol
+    * def result = call read('classpath:helpers/getPhotosByMartianSol.feature') {date: 1000}
+    * def photos = result.response.photos
+    And match photos == "#array"
+    And match photos == '#[25]'
+    And match each photos == {"id":"#number","sol":"#number","camera":"#object","img_src":"#string","earth_date":"#string","rover":"#object"}
+    And match each photos..rover.name == 'Curiosity'
+    And match each photos..sol == 1000
+    And match each photos..earth_date == '2015-05-30'
+    * def martialSolImageUrls = []
+    * def retrieveImageSource = function(i){ karate.appendTo(martialSolImageUrls, photos[i].img_src) }
+    * karate.repeat(10, retrieveImageSource)
+    * def martialSolImageUrls = karate.lowerCase(martialSolImageUrls)
+    And match each martialSolImageUrls contains '.jpg'
+    #retrieve the first 10 Mars photos made by "Curiosity" on Earth date 30/5/2015
+    * def result = call read('classpath:helpers/getPhotosByEarthDate.feature') {date: '2015-5-30'}
+    * def photos = result.response.photos
+    And match photos == "#array"
+    And match photos == '#[25]'
+    And match each photos == {"id":"#number","sol":"#number","camera":"#object","img_src":"#string","earth_date":"#string","rover":"#object"}
+    And match each photos..rover.name == 'Curiosity'
+    And match each photos..sol == 1000
+    And match each photos..earth_date == '2015-05-30'
+    * def earthDateImageUrls = []
+    * def retrieveImageSource = function(i){ karate.appendTo(earthDateImageUrls, photos[i].img_src) }
+    * karate.repeat(10, retrieveImageSource)
+    * def earthDateImageUrls = karate.lowerCase(earthDateImageUrls)
+    And match each earthDateImageUrls contains '.jpg'
+    And match martialSolImageUrls == earthDateImageUrls
+
+    
     
     @smoke @flaky
     Scenario: Example FlakyTest
