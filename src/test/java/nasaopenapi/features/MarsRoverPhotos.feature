@@ -67,6 +67,18 @@ Feature: User is query Mars Rover Photos
     And match each earthDateImageUrls contains '.jpg'
     And match martialSolImageUrls == earthDateImageUrls
 
+    @smoke
+    Scenario: Amounts of pictures that each "Curiosity" camera took on 1000 Mars sol is not greater than 10 times the amount taken by other cameras
+    * def result = call read('classpath:helpers/getPhotosByMartianSol.feature') {date: 1000}
+    * def photos = result.response.photos
+    And match each photos..sol == 1000
+    * def camerasNames = []
+    * def getCamerasNames = function(x){ karate.appendTo(camerasNames, x.camera.name) }
+    * karate.forEach(photos, getCamerasNames)
+    * def CountPhotosByCamera = Java.type('helpers.CountPhotosByCamera')
+    * def result = CountPhotosByCamera.main(camerasNames)
+    
+
     
     
     @smoke @flaky
