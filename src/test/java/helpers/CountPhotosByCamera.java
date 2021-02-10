@@ -7,9 +7,11 @@ import com.fasterxml.jackson.databind.*;
 
 public class CountPhotosByCamera {
     
-    public static void main(JSONArray arr) {
+    public static Map<String,String> main(JSONArray arr) {
+		String testCaseResult = "passed";
+		Map<String,String> result = new HashMap<String,String>();
 
-		List<String> list = new ArrayList<String>();
+    	List<String> list = new ArrayList<String>();
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
@@ -49,12 +51,16 @@ public class CountPhotosByCamera {
 				if (currentCameraCount / j.getValue() > 10) {
 					System.out.println(currentCameraName + " Camera Count is 10 times greater than " + j.getKey());
 					ErrorsFound.append(currentCameraName).append(" Camera Count is 10 times greater than ").append(j.getKey()).append(". ");
+					testCaseResult = "failed";
 					}
 				}
 			}
 
 		System.out.println(ErrorsFound);
 
-		}
+		result.put("TestCaseResult",testCaseResult);
+		result.put("ErrorsFound",ErrorsFound.toString());
+		return result;
+	}
 
 }
