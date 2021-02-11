@@ -1,28 +1,24 @@
 package helpers;
 import java.util.*;
-
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 import net.minidev.json.JSONArray;
 import com.fasterxml.jackson.databind.*;
 
 public class CountPhotosByCamera {
     
-    public static Map<String,String> main(JSONArray arr) {
+    public static Map<String,String> main(JSONArray arrayCamerasNames) {
 		String testCaseResult = "passed";
-		Map<String,String> result = new HashMap<String,String>();
 
-    	List<String> list = new ArrayList<String>();
+    	List<String> listCamerasNames = new ArrayList<String>();
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
-			list = objectMapper.readValue(arr.toJSONString(), List.class);
+			listCamerasNames = objectMapper.readValue(arrayCamerasNames.toJSONString(), List.class);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 
 		Map<String, Integer> frequencyMap = new HashMap<>();
-		System.out.println("Calculating frequencies...");
-		for (String s: list) {
+		for (String s: listCamerasNames) {
 			Integer count = frequencyMap.get(s);
 			if (count == null)
 				count = 0;
@@ -35,31 +31,29 @@ public class CountPhotosByCamera {
 			System.out.println(entry.getKey() + ": " + entry.getValue());
 		}
 
-		String currentCameraName = "";
-		int currentCameraCount = 0;
-		StringBuilder ErrorsFound = new StringBuilder();
+		StringBuilder errorsFound = new StringBuilder();
 		for (Map.Entry<String, Integer> i : frequencyMap.entrySet()) {
 			System.out.println("Comparing camera:");
 			System.out.println(i.getKey() + ": " + i.getValue());
 
-			currentCameraName = i.getKey();
-			currentCameraCount = i.getValue();
-
 			for (Map.Entry<String, Integer> j : frequencyMap.entrySet()) {
+				if (i.getKey().equals(j.getKey())) continue;
+
 				System.out.println("to camera:");
 				System.out.println(j.getKey() + ": " + j.getValue());
-				if (currentCameraCount / j.getValue() > 10) {
-					System.out.println(currentCameraName + " Camera Count is 10 times greater than " + j.getKey());
-					ErrorsFound.append(currentCameraName).append(" Camera Count is 10 times greater than ").append(j.getKey()).append(". ");
+				if (i.getValue() / j.getValue() > 10) {
+					System.out.println(i.getKey() + " Camera Count is 10 times greater than " + j.getKey());
+					errorsFound.append(i.getKey()).append(" Camera Count is 10 times greater than ").append(j.getKey()).append(". ");
 					testCaseResult = "failed";
 					}
 				}
 			}
 
-		System.out.println(ErrorsFound);
+		System.out.println(errorsFound);
 
+		Map<String,String> result = new HashMap<String,String>();
 		result.put("TestCaseResult",testCaseResult);
-		result.put("ErrorsFound",ErrorsFound.toString());
+		result.put("ErrorsFound",errorsFound.toString());
 		return result;
 	}
 
