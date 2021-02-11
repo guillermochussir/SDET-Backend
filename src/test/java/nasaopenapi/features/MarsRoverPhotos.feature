@@ -1,11 +1,11 @@
-Feature: User is query Mars Rover Photos
+Feature: User is able query Mars Rover Photos
 
     Background: Define URL
     Given url 'https://api.nasa.gov/mars-photos/api/v1/rovers'
 
     @smoke
     Scenario: User is able to retrieve the first 10 Mars photos made by "Curiosity" on 1000 Martian sol
-    * def result = call read('classpath:helpers/getPhotosByMartianSolOnlyOnePage.feature') {date: 1000}
+    * def result = call read('classpath:helpers/getPhotosByMartianSolOnlyFirstPage.feature') {date: 1000, roverName: 'Curiosity'}
     * def photos = result.response.photos
     And match photos == "#array"
     And match photos == '#[25]'
@@ -21,7 +21,7 @@ Feature: User is query Mars Rover Photos
 
     @smoke
     Scenario: User is able to retrieve the first 10 Mars photos made by "Curiosity" on Earth date 30/5/2015
-    * def result = call read('classpath:helpers/getPhotosByEarthDateOnlyOnePage.feature') {date: '2015-5-30'}
+    * def result = call read('classpath:helpers/getPhotosByEarthDateOnlyFirstPage.feature') {date: '2015-5-30', roverName: 'Curiosity'}
     * def photos = result.response.photos
     And match photos == "#array"
     And match photos == '#[25]'
@@ -38,13 +38,13 @@ Feature: User is query Mars Rover Photos
     @sanity
     Scenario: Compare Photos
     #retrieve the first 10 Mars photos made by "Curiosity" on 1000 Martian sol
-    * def result = call read('classpath:helpers/getPhotosByMartianSolOnlyOnePage.feature') {date: 1000}
+    * def result = call read('classpath:helpers/getPhotosByMartianSolOnlyFirstPage.feature') {date: 1000, roverName: 'Curiosity'}
     * def photos = result.response.photos
     * def martialSolImageUrls = []
     * def retrieveImageSource = function(i){ karate.appendTo(martialSolImageUrls, photos[i].img_src) }
     * karate.repeat(10, retrieveImageSource)
     #retrieve the first 10 Mars photos made by "Curiosity" on Earth date 30/5/2015
-    * def result = call read('classpath:helpers/getPhotosByEarthDateOnlyOnePage.feature') {date: '2015-5-30'}
+    * def result = call read('classpath:helpers/getPhotosByEarthDateOnlyFirstPage.feature') {date: '2015-5-30', roverName: 'Curiosity'}
     * def photos = result.response.photos
     * def earthDateImageUrls = []
     * def retrieveImageSource = function(i){ karate.appendTo(earthDateImageUrls, photos[i].img_src) }
@@ -55,7 +55,7 @@ Feature: User is query Mars Rover Photos
     Scenario: Amounts of pictures that each "Curiosity" camera took on 1000 Mars sol is not greater than 10 times the amount taken by other cameras
         # threshold = test case fails if amount of pictures is more than X times greater
         * def threshold = 10
-        * def result = call read('classpath:helpers/getPhotosByMartianSol.feature') {date: 1000}
+        * def result = call read('classpath:helpers/getPhotosByMartianSolNoPageFilter.feature') {date: 1000, roverName: 'Curiosity'}
         * def photos = result.response.photos
         And match each photos..sol == 1000
         * def camerasNames = []
