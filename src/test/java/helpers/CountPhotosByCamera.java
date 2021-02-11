@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.*;
 
 public class CountPhotosByCamera {
 
-	public static Map<String,String> main(LinkedHashMap arg) {
+	public static Map<String,String> main(LinkedHashMap<String,Object> arg) {
 		List<String> listCamerasNames = new ArrayList<String>();
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
