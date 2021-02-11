@@ -1,58 +1,54 @@
 package helpers;
 import java.util.*;
-import net.minidev.json.JSONArray;
+import java.util.LinkedHashMap;
 import com.fasterxml.jackson.databind.*;
 
 public class CountPhotosByCamera {
-    
-    public static Map<String,String> main(JSONArray arrayCamerasNames) {
-		String testCaseResult = "passed";
 
-    	List<String> listCamerasNames = new ArrayList<String>();
-
+	public static Map<String,String> main(LinkedHashMap arg) {
+		List<String> listCamerasNames = new ArrayList<String>();
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
-			listCamerasNames = objectMapper.readValue(arrayCamerasNames.toJSONString(), List.class);
+			listCamerasNames = objectMapper.readValue(arg.get("CamerasNames").toString(), List.class);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 
-		Map<String, Integer> frequencyMap = new HashMap<>();
+		Map<String, Double> frequencyMap = new HashMap<>();
 		for (String s: listCamerasNames) {
-			Integer count = frequencyMap.get(s);
+			Double count = frequencyMap.get(s);
 			if (count == null)
-				count = 0;
-
+				count = 0.0;
 			frequencyMap.put(s, count + 1);
-            System.out.println(s);
-		}
-
-		for (Map.Entry<String, Integer> entry : frequencyMap.entrySet()) {
-			System.out.println(entry.getKey() + ": " + entry.getValue());
 		}
 
 		StringBuilder errorsFound = new StringBuilder();
-		for (Map.Entry<String, Integer> i : frequencyMap.entrySet()) {
-			System.out.println("Comparing camera:");
-			System.out.println(i.getKey() + ": " + i.getValue());
-
-			for (Map.Entry<String, Integer> j : frequencyMap.entrySet()) {
+		String stepResult = "passed";
+		errorsFound.append("Errors Found:");
+		for (Map.Entry<String, Double> i : frequencyMap.entrySet()) {
+			for (Map.Entry<String, Double> j : frequencyMap.entrySet()) {
 				if (i.getKey().equals(j.getKey())) continue;
-
-				System.out.println("to camera:");
-				System.out.println(j.getKey() + ": " + j.getValue());
-				if (i.getValue() / j.getValue() > 10) {
-					System.out.println(i.getKey() + " Camera Count is 10 times greater than " + j.getKey());
-					errorsFound.append(i.getKey()).append(" Camera Count is 10 times greater than ").append(j.getKey()).append(". ");
-					testCaseResult = "failed";
-					}
+				if (( i.getValue() / j.getValue() > (int) arg.get("Threshold"))) {
+					errorsFound.
+							append(System.lineSeparator()).
+							append("Amount of pictures taken by ").
+							append(i.getKey()).
+							append(" is more than ").
+							append(arg.get("Threshold")).
+							append(" times greater than ").
+							append(j.getKey()).
+							append(". ").
+							append((int) Math.round(i.getValue())).
+							append(" vs ").
+							append((int) Math.round(j.getValue()));
+					stepResult = "failed";
 				}
 			}
+		}
 
-		System.out.println(errorsFound);
-
+		if (stepResult.equals("passed")) { errorsFound.append(System.lineSeparator()).append("None"); }
 		Map<String,String> result = new HashMap<String,String>();
-		result.put("TestCaseResult",testCaseResult);
+		result.put("StepResult",stepResult);
 		result.put("ErrorsFound",errorsFound.toString());
 		return result;
 	}

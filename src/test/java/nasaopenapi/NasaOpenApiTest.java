@@ -2,7 +2,7 @@ package nasaopenapi;
 import com.intuit.karate.KarateOptions;
 import com.intuit.karate.junit5.Karate;
 
-@KarateOptions( tags = {"@smoke", "~@flaky", "@flaky"})
+@KarateOptions( tags = {"@smoke", "@sanity", "~@flaky", "@flaky"})
 class NasaOpenApiTest {
     
     // this will run all *.feature files that exist in sub-directories
